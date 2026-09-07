@@ -252,6 +252,56 @@
   .section-title{font-size:clamp(19px,2.4vw,23px);font-weight:800;margin:0 0 4px;}
   .section-sub{color:var(--text-dim);font-size:14px;margin:0 0 26px;}
 
+  /* search bar */
+  .search-bar{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 18px;border-radius:16px;margin-bottom:24px;
+    color:var(--text-faint);
+  }
+  .search-bar svg{width:19px;height:19px;stroke:currentColor;flex:0 0 auto;}
+  .search-bar input{
+    flex:1;border:none;background:none;outline:none;color:var(--text);font-size:15px;font-family:inherit;
+  }
+  .search-bar input::placeholder{color:var(--text-faint);}
+  .btn-clear-search{padding:4px;color:var(--text-faint);flex:0 0 auto;}
+  .btn-clear-search svg{width:15px;height:15px;stroke:currentColor;}
+  .btn-clear-search:hover{color:var(--text);}
+
+  /* list rows (services / companies) */
+  .list-panel{border-radius:20px;padding:8px;display:flex;flex-direction:column;}
+  .list-row{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:right;
+    padding:16px 14px;border-radius:14px;
+    animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;
+    transition:background .15s ease, transform .12s ease;
+  }
+  .list-row:not(:last-child){border-bottom:1px solid var(--border);}
+  .list-row:hover{background:color-mix(in srgb, var(--accent) 6%, transparent);}
+  .list-row:active{transform:scale(.99);}
+  .list-panel .list-row:nth-child(1){animation-delay:.02s;} .list-panel .list-row:nth-child(2){animation-delay:.05s;}
+  .list-panel .list-row:nth-child(3){animation-delay:.08s;} .list-panel .list-row:nth-child(4){animation-delay:.11s;}
+  .list-panel .list-row:nth-child(n+5){animation-delay:.13s;}
+  .list-row-icon{
+    width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+    background:color-mix(in srgb, var(--accent) 14%, var(--surface));color:var(--accent);
+  }
+  .list-row-icon svg{width:20px;height:20px;stroke:currentColor;}
+  .list-row-main{flex:1;min-width:0;}
+  .list-row-title{font-size:15px;font-weight:800;}
+  .list-row-sub{font-size:12.5px;color:var(--text-faint);margin-top:3px;}
+  .list-row-trail{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
+  .list-row-price{font-size:14px;font-weight:700;color:var(--accent);white-space:nowrap;}
+  .list-row-chevron{color:var(--text-faint);display:flex;}
+  .list-row-chevron svg{width:16px;height:16px;stroke:currentColor;}
+
+  .modal-wide{max-width:560px;}
+  .detail-price-box{
+    display:flex;align-items:baseline;gap:8px;justify-content:center;
+    padding:20px;border-radius:16px;margin-bottom:6px;
+  }
+  .detail-price-box span{font-family:'IBM Plex Mono',monospace;font-size:clamp(26px,5vw,32px);font-weight:700;color:var(--accent);}
+  .detail-price-box small{color:var(--text-faint);font-size:14px;}
+
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
   .tile{
     border-radius:18px;padding:22px;text-align:right;
@@ -435,9 +485,16 @@ const ICONS = {
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
-  palette: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 22a10 10 0 1 1 0-20c5.5 0 10 3.5 10 8 0 2-1.5 3-3 3h-2.5a2 2 0 0 0-1 3.7c.5.4.8 1 .8 1.6a2 2 0 0 1-2 2H12z"/></svg>'
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 22a10 10 0 1 1 0-20c5.5 0 10 3.5 10 8 0 2-1.5 3-3 3h-2.5a2 2 0 0 0-1 3.7c.5.4.8 1 .8 1.6a2 2 0 0 1-2 2H12z"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+  key: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5L18 10M12.5 10.5L15 13"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
+  headset: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>',
+  app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>'
 };
-const CATEGORY_ICON = {phones:'phone', pc:'pc', gaming:'gamepad', tv:'tv'};
+const ICON_CHOICES = ['gamepad','pc','key','cloud','headset','app','tv','phone'];
 const ACCENTS = [
   {id:'blue', label:'أزرق'}, {id:'purple', label:'بنفسجي'}, {id:'emerald', label:'زمردي'},
   {id:'amber', label:'كهرماني'}, {id:'rose', label:'وردي'}, {id:'indigo', label:'نيلي'}
@@ -536,7 +593,7 @@ let state = {
   token: localStorage.getItem('workshop_token') || null,
   currentUser: JSON.parse(localStorage.getItem('workshop_user') || 'null'),
   data: { categories: {}, users: [] },
-  selCategory: null, selCompany: null, selModel: null,
+  selCategory: null, selCompany: null, searchQuery: '',
   view: 'browse', adminTab: 'catalog', adminCategory: null
 };
 
@@ -636,7 +693,7 @@ function doLogout(){
 function navItemsList(){
   const cats = state.data.categories;
   const items = Object.keys(cats).map(catId=>({
-    id: catId, label: cats[catId].name, icon: ICONS[CATEGORY_ICON[catId]],
+    id: catId, label: cats[catId].name, icon: ICONS[cats[catId].icon] || ICONS.gamepad,
     active: state.view==='browse' && state.selCategory===catId,
     onClick: `goCategory('${catId}')`
   }));
@@ -667,13 +724,60 @@ function renderNav(){
 }
 
 function goCategory(catId){
-  state.view='browse'; state.selCategory=catId; state.selCompany=null; state.selModel=null;
+  state.view='browse'; state.selCategory=catId; state.selCompany=null;
+  state.searchQuery='';
   renderNav(); renderMain();
 }
 async function goAdmin(){
-  state.view='admin'; state.adminTab='catalog';
+  state.view='admin'; state.adminTab='categories';
   state.adminCategory = state.adminCategory || Object.keys(state.data.categories)[0];
   renderNav(); renderMain();
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+function allServicesFlat(){
+  const out = [];
+  Object.entries(state.data.categories).forEach(([catId, cat])=>{
+    cat.companies.forEach(comp=>{
+      comp.models.forEach(model=>{
+        out.push({ catId, catName: cat.name, comp, model });
+      });
+    });
+  });
+  return out;
+}
+function searchServices(query){
+  const q = query.trim().toLowerCase();
+  if(!q) return [];
+  return allServicesFlat().filter(item=>
+    item.model.name.toLowerCase().includes(q) ||
+    item.comp.name.toLowerCase().includes(q) ||
+    item.catName.toLowerCase().includes(q)
+  );
+}
+function onSearchInput(value){
+  state.searchQuery = value;
+  renderMain();
+  const input = document.getElementById('search-input');
+  if(input){ input.focus(); const p = value.length; input.setSelectionRange(p,p); }
+}
+function clearSearch(){
+  state.searchQuery = '';
+  renderMain();
+  const input = document.getElementById('search-input');
+  if(input) input.focus();
+}
+
+function searchBarHTML(){
+  const q = state.searchQuery || '';
+  return `
+    <div class="search-bar neu-inset">
+      ${ICONS.search}
+      <input id="search-input" type="text" placeholder="ابحث عن خدمة أو شركة..." value="${q.replace(/"/g,'&quot;')}" oninput="onSearchInput(this.value)">
+      ${q ? `<button class="btn-clear-search" onclick="clearSearch()">${ICONS.x}</button>` : ''}
+    </div>`;
 }
 
 /* =========================================================
@@ -683,8 +787,31 @@ function renderMain(){
   const main = document.getElementById('main');
   if(state.view==='admin'){ renderAdmin(); return; }
 
+  const q = (state.searchQuery||'').trim();
+  if(q){
+    const results = searchServices(q);
+    let body = `<h2 class="section-title">نتائج البحث</h2><p class="section-sub">${results.length} خدمة مطابقة لـ «${q}»</p>`;
+    if(results.length===0){
+      body += `<div class="empty">ماكو نتائج مطابقة، جرب كلمة ثانية</div>`;
+    }else{
+      body += `<div class="list-panel neu-raised-sm">` + results.map(r=>`
+        <button class="list-row" onclick="openServiceModal('${r.catId}','${r.comp.id}','${r.model.id}')">
+          <div class="list-row-main">
+            <div class="list-row-title">${r.model.name}</div>
+            <div class="list-row-sub">${r.catName} · ${r.comp.name}</div>
+          </div>
+          <div class="list-row-trail">
+            <span class="list-row-price mono">${fmtPrice(r.model.price)} د.ع</span>
+            <span class="list-row-chevron">${ICONS.chevron}</span>
+          </div>
+        </button>`).join('') + `</div>`;
+    }
+    main.innerHTML = searchBarHTML() + body;
+    return;
+  }
+
   if(!state.selCategory){
-    main.innerHTML = `<div class="empty">اختر قسماً من القائمة للبدء</div>`;
+    main.innerHTML = searchBarHTML() + `<div class="empty">اختر قسماً من القائمة للبدء، أو استخدم البحث فوگ</div>`;
     return;
   }
   const cat = state.data.categories[state.selCategory];
@@ -692,11 +819,8 @@ function renderMain(){
   let crumb = `<div class="breadcrumb">`;
   if(!state.selCompany){
     crumb += `<span class="crumb-current">${cat.name}</span>`;
-  }else if(!state.selModel){
-    crumb += `<button onclick="goCategory('${state.selCategory}')">${cat.name}</button><span class="sep">/</span><span class="crumb-current">${companyById(cat,state.selCompany).name}</span>`;
   }else{
-    const comp = companyById(cat, state.selCompany);
-    crumb += `<button onclick="goCategory('${state.selCategory}')">${cat.name}</button><span class="sep">/</span><button onclick="selectCompany('${comp.id}')">${comp.name}</button><span class="sep">/</span><span class="crumb-current">${modelById(comp,state.selModel).name}</span>`;
+    crumb += `<button onclick="goCategory('${state.selCategory}')">${cat.name}</button><span class="sep">/</span><span class="crumb-current">${companyById(cat,state.selCompany).name}</span>`;
   }
   crumb += `</div>`;
 
@@ -706,59 +830,70 @@ function renderMain(){
     if(cat.companies.length===0){
       body += `<div class="empty">لا توجد شركات مضافة بعد لهذا القسم</div>`;
     }else{
-      body += `<div class="grid">` + cat.companies.map(c=>`
-        <button class="tile neu-raised-sm" onclick="selectCompany('${c.id}')">
-          <div class="tile-icon">${ICONS[CATEGORY_ICON[state.selCategory]]}</div>
-          <div class="tile-name">${c.name}</div>
-          <div class="tile-meta">${c.models.length} موديل متوفر</div>
-        </button>`).join('') + `</div>`;
-    }
-  }else if(!state.selModel){
-    const comp = companyById(cat, state.selCompany);
-    body = `<h2 class="section-title">${comp.name}</h2><p class="section-sub">اختر الموديل</p>`;
-    if(comp.models.length===0){
-      body += `<div class="empty">لا توجد موديلات مضافة بعد لهذه الشركة</div>`;
-    }else{
-      body += `<div class="grid">` + comp.models.map(m=>`
-        <button class="tile neu-raised-sm" onclick="selectModel('${m.id}')">
-          <div class="tile-name">${m.name}</div>
-          <div class="tile-price">${fmtPrice(m.price)} د.ع</div>
+      body += `<div class="list-panel neu-raised-sm">` + cat.companies.map(c=>`
+        <button class="list-row" onclick="selectCompany('${c.id}')">
+          <div class="list-row-icon">${ICONS[cat.icon] || ICONS.gamepad}</div>
+          <div class="list-row-main">
+            <div class="list-row-title">${c.name}</div>
+            <div class="list-row-sub">${c.models.length} خدمة متوفرة</div>
+          </div>
+          <div class="list-row-trail"><span class="list-row-chevron">${ICONS.chevron}</span></div>
         </button>`).join('') + `</div>`;
     }
   }else{
     const comp = companyById(cat, state.selCompany);
-    const model = modelById(comp, state.selModel);
-    body = `
-      <div class="detail-panel neu-raised-sm">
-        <div class="detail-top">
-          <div>
-            <div class="detail-company">${cat.name} · ${comp.name}</div>
-            <h2 class="detail-name">${model.name}</h2>
+    body = `<h2 class="section-title">${comp.name}</h2><p class="section-sub">اختر الخدمة</p>`;
+    if(comp.models.length===0){
+      body += `<div class="empty">لا توجد خدمات مضافة بعد لهذه الشركة</div>`;
+    }else{
+      body += `<div class="list-panel neu-raised-sm">` + comp.models.map(m=>`
+        <button class="list-row" onclick="openServiceModal('${state.selCategory}','${comp.id}','${m.id}')">
+          <div class="list-row-main">
+            <div class="list-row-title">${m.name}</div>
           </div>
-          <div class="detail-price"><span id="price-count">0</span><small>د.ع</small></div>
-        </div>
-        <div class="detail-block">
-          <h4>تفاصيل الموديل</h4>
-          <ul class="detail-list">${(model.specs||[]).map(s=>`<li><span class="li-dot"></span>${s}</li>`).join('') || '<li>لا توجد تفاصيل مضافة</li>'}</ul>
-        </div>
-        <div class="detail-block">
-          <h4>الشروط والملاحظات</h4>
-          <ul class="detail-list terms">${(model.conditions||[]).map(s=>`<li><span class="li-dot warn"></span>${s}</li>`).join('') || '<li>لا توجد شروط إضافية</li>'}</ul>
-        </div>
-      </div>`;
-    main.innerHTML = crumb + body;
-    const priceEl = document.getElementById('price-count');
-    let start=0; const target=model.price; const dur=650; const t0=performance.now();
-    function step(t){ const p=Math.min(1,(t-t0)/dur); priceEl.textContent = fmtPrice(Math.round(target*p)); if(p<1) requestAnimationFrame(step); }
-    requestAnimationFrame(step);
-    return;
+          <div class="list-row-trail">
+            <span class="list-row-price mono">${fmtPrice(m.price)} د.ع</span>
+            <span class="list-row-chevron">${ICONS.chevron}</span>
+          </div>
+        </button>`).join('') + `</div>`;
+    }
   }
-  main.innerHTML = crumb + body;
+  main.innerHTML = searchBarHTML() + crumb + body;
 }
-function selectCompany(id){ state.selCompany=id; state.selModel=null; renderMain(); }
-function selectModel(id){ state.selModel=id; renderMain(); }
+function selectCompany(id){ state.selCompany=id; renderMain(); }
 function companyById(cat,id){ return cat.companies.find(c=>c.id===id); }
 function modelById(comp,id){ return comp.models.find(m=>m.id===id); }
+
+function openServiceModal(catId, compId, modelId){
+  const cat = state.data.categories[catId];
+  const comp = companyById(cat, compId);
+  const model = modelById(comp, modelId);
+  openModal(`
+    <div class="detail-top" style="margin-bottom:18px;">
+      <div>
+        <div class="detail-company">${cat.name} · ${comp.name}</div>
+        <h2 class="detail-name">${model.name}</h2>
+      </div>
+    </div>
+    <div class="detail-price-box neu-inset">
+      <span id="modal-price-count">0</span><small>د.ع</small>
+    </div>
+    <div class="detail-block">
+      <h4>تفاصيل الخدمة</h4>
+      <ul class="detail-list">${(model.specs||[]).map(s=>`<li><span class="li-dot"></span>${s}</li>`).join('') || '<li>لا توجد تفاصيل مضافة</li>'}</ul>
+    </div>
+    <div class="detail-block">
+      <h4>الشروط والملاحظات</h4>
+      <ul class="detail-list terms">${(model.conditions||[]).map(s=>`<li><span class="li-dot warn"></span>${s}</li>`).join('') || '<li>لا توجد شروط إضافية</li>'}</ul>
+    </div>
+    <div class="modal-actions"><button class="btn btn-primary" id="sm-close">تم</button></div>
+  `, 'modal-wide');
+  document.getElementById('sm-close').onclick = closeModal;
+  const priceEl = document.getElementById('modal-price-count');
+  const target = model.price; const dur = 600; const t0 = performance.now();
+  function step(t){ const p=Math.min(1,(t-t0)/dur); priceEl.textContent = fmtPrice(Math.round(target*p)); if(p<1) requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
 
 /* =========================================================
    ADMIN VIEW
@@ -777,11 +912,25 @@ async function renderAdmin(){
 function adminHTML(){
   let html = `<h2 class="section-title">لوحة التحكم</h2><p class="section-sub">إدارة الشركات، الموديلات، وحسابات الموظفين</p>`;
   html += `<div class="admin-tabs neu-inset">
-    <button class="admin-tab ${state.adminTab==='catalog'?'active':''}" data-tab="catalog">الشركات والموديلات</button>
+    <button class="admin-tab ${state.adminTab==='categories'?'active':''}" data-tab="categories">الأقسام</button>
+    <button class="admin-tab ${state.adminTab==='catalog'?'active':''}" data-tab="catalog">الشركات والخدمات</button>
     <button class="admin-tab ${state.adminTab==='users'?'active':''}" data-tab="users">حسابات المستخدمين</button>
   </div>`;
 
-  if(state.adminTab==='catalog'){
+  if(state.adminTab==='categories'){
+    html += `<div class="admin-section-head"><h3>أقسام الخدمات</h3>
+      <button class="btn btn-primary btn-sm" id="btn-add-category">${ICONS.plus} إضافة قسم</button></div>`;
+    Object.entries(state.data.categories).forEach(([id, cat])=>{
+      html += `<div class="admin-row neu-raised-sm">
+        <div class="list-row-icon" style="margin-inline-end:2px;">${ICONS[cat.icon] || ICONS.gamepad}</div>
+        <div class="admin-row-info" style="flex:1;"><b>${cat.name}</b><span>${cat.companies.length} شركة</span></div>
+        <div class="admin-row-actions">
+          <button class="btn btn-sm" data-edit-category="${id}">${ICONS.edit}</button>
+          <button class="btn btn-danger btn-sm" data-del-category="${id}">${ICONS.trash}</button>
+        </div>
+      </div>`;
+    });
+  } else if(state.adminTab==='catalog'){
     html += `<div class="cat-pills neu-inset" style="padding:8px;border-radius:20px;">` + Object.keys(state.data.categories).map(id=>`
       <button class="cat-pill ${state.adminCategory===id?'active':''}" data-cat="${id}">${state.data.categories[id].name}</button>
     `).join('') + `</div>`;
@@ -832,6 +981,23 @@ function bindAdminEvents(){
   document.querySelectorAll('.cat-pill').forEach(el=>{ el.onclick = ()=>{ state.adminCategory = el.dataset.cat; renderMain(); }; });
   const addCompanyBtn = document.getElementById('btn-add-company'); if(addCompanyBtn) addCompanyBtn.onclick = ()=> openCompanyModal();
   const addUserBtn = document.getElementById('btn-add-user'); if(addUserBtn) addUserBtn.onclick = ()=> openUserModal();
+  const addCategoryBtn = document.getElementById('btn-add-category'); if(addCategoryBtn) addCategoryBtn.onclick = ()=> openCategoryModal();
+
+  document.querySelectorAll('[data-edit-category]').forEach(el=>{ el.onclick = ()=> openCategoryModal(el.dataset.editCategory); });
+  document.querySelectorAll('[data-del-category]').forEach(el=>{
+    el.onclick = ()=>{
+      const id = el.dataset.delCategory;
+      confirmModal('حذف القسم؟','سيتم حذف القسم وكل الشركات والخدمات الموجودة بداخله نهائياً.', async ()=>{
+        try{
+          await apiCall('delete_category','POST',{id});
+          await refreshData();
+          if(state.adminCategory===id) state.adminCategory = Object.keys(state.data.categories)[0] || null;
+          if(state.selCategory===id){ state.selCategory=null; state.selCompany=null; }
+          renderNav(); renderMain(); loadPublicStats();
+        }catch(e){ alert(e.message); }
+      });
+    };
+  });
 
   document.querySelectorAll('[data-add-model]').forEach(el=>{ el.onclick = ()=> openModelModal(el.dataset.addModel, null); });
   document.querySelectorAll('[data-edit-model]').forEach(el=>{ el.onclick = ()=>{ const [cid,mid]=el.dataset.editModel.split('|'); openModelModal(cid, mid); }; });
@@ -867,8 +1033,8 @@ function bindAdminEvents(){
 /* ---------- modal helpers ---------- */
 const modalRoot = document.getElementById('modal-root');
 function closeModal(){ modalRoot.innerHTML=''; }
-function openModal(innerHTML){
-  modalRoot.innerHTML = `<div class="modal-backdrop" id="modal-backdrop"><div class="modal neu-raised">${innerHTML}</div></div>`;
+function openModal(innerHTML, extraClass){
+  modalRoot.innerHTML = `<div class="modal-backdrop" id="modal-backdrop"><div class="modal neu-raised ${extraClass||''}">${innerHTML}</div></div>`;
   document.getElementById('modal-backdrop').addEventListener('click', function(e){ if(e.target.id==='modal-backdrop') closeModal(); });
 }
 function confirmModal(title, msg, onConfirm){
@@ -881,6 +1047,41 @@ function confirmModal(title, msg, onConfirm){
     </div>`);
   document.getElementById('cm-cancel').onclick = closeModal;
   document.getElementById('cm-confirm').onclick = ()=>{ closeModal(); onConfirm(); };
+}
+
+function openCategoryModal(categoryId){
+  const editing = categoryId ? state.data.categories[categoryId] : null;
+  let selectedIcon = editing ? (editing.icon || 'gamepad') : 'gamepad';
+  openModal(`
+    <h3>${editing?'تعديل القسم':'إضافة قسم جديد'}</h3>
+    <div class="field"><label>اسم القسم</label><input id="mcat-name" value="${editing?editing.name:''}" placeholder="مثال: ألعاب بلايستيشن"></div>
+    <div class="field"><label>الأيقونة</label>
+      <div class="swatch-row" id="mcat-icons">
+        ${ICON_CHOICES.map(ic=>`<button type="button" class="btn btn-icon ${ic===selectedIcon?'btn-primary':''}" data-icon="${ic}" style="border-radius:13px;">${ICONS[ic]}</button>`).join('')}
+      </div>
+    </div>
+    <div class="login-error" id="mcat-error"></div>
+    <div class="modal-actions">
+      <button class="btn" id="mcat-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="mcat-save">حفظ</button>
+    </div>`);
+  document.querySelectorAll('#mcat-icons [data-icon]').forEach(el=>{
+    el.onclick = ()=>{
+      selectedIcon = el.dataset.icon;
+      document.querySelectorAll('#mcat-icons [data-icon]').forEach(b=>b.classList.remove('btn-primary'));
+      el.classList.add('btn-primary');
+    };
+  });
+  document.getElementById('mcat-cancel').onclick = closeModal;
+  document.getElementById('mcat-save').onclick = async ()=>{
+    const name = document.getElementById('mcat-name').value.trim();
+    if(!name){ return; }
+    try{
+      if(editing){ await apiCall('update_category','POST',{id: categoryId, name, icon: selectedIcon}); }
+      else{ await apiCall('add_category','POST',{name, icon: selectedIcon}); }
+      await refreshData(); closeModal(); renderNav(); renderMain(); loadPublicStats();
+    }catch(e){ document.getElementById('mcat-error').textContent = e.message; }
+  };
 }
 
 function openCompanyModal(){

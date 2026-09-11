@@ -35,6 +35,7 @@
     --text-faint:#98A1AE;
     --border:rgba(163,177,198,.32);
     --danger:#E5484D;
+    --danger-rgb:229,72,77;
   }
   [data-mode="dark"]{
     --bg:#1A202B;
@@ -49,13 +50,14 @@
     --text-faint:#5E6980;
     --border:rgba(255,255,255,.07);
     --danger:#F0666B;
+    --danger-rgb:240,102,107;
   }
-  [data-accent="blue"]{ --accent:#3B82F6; --accent-2:#60A5FA; }
-  [data-accent="purple"]{ --accent:#8B5CF6; --accent-2:#A78BFA; }
-  [data-accent="emerald"]{ --accent:#059669; --accent-2:#34D399; }
-  [data-accent="amber"]{ --accent:#D97706; --accent-2:#FBBF24; }
-  [data-accent="rose"]{ --accent:#E11D48; --accent-2:#FB7185; }
-  [data-accent="indigo"]{ --accent:#4F46E5; --accent-2:#818CF8; }
+  [data-accent="blue"]{ --accent:#3B82F6; --accent-2:#60A5FA; --accent-rgb:59,130,246; }
+  [data-accent="purple"]{ --accent:#8B5CF6; --accent-2:#A78BFA; --accent-rgb:139,92,246; }
+  [data-accent="emerald"]{ --accent:#059669; --accent-2:#34D399; --accent-rgb:5,150,105; }
+  [data-accent="amber"]{ --accent:#D97706; --accent-2:#FBBF24; --accent-rgb:217,119,6; }
+  [data-accent="rose"]{ --accent:#E11D48; --accent-2:#FB7185; --accent-rgb:225,29,72; }
+  [data-accent="indigo"]{ --accent:#4F46E5; --accent-2:#818CF8; --accent-rgb:79,70,229; }
 
   ::selection{background:var(--accent);color:#fff;}
   .mono{font-family:'IBM Plex Mono',monospace;}
@@ -105,11 +107,11 @@
   .btn-primary{
     color:#fff;
     background:linear-gradient(135deg, var(--accent), var(--accent-2));
-    box-shadow:0 8px 20px -6px color-mix(in srgb, var(--accent) 55%, transparent), 3px 3px 8px var(--shadow-d-soft);
+    box-shadow:0 8px 20px -6px rgba(var(--accent-rgb),.55), 3px 3px 8px var(--shadow-d-soft);
   }
   .btn-primary:hover{filter:brightness(1.05);color:#fff;}
   .btn-primary:active{
-    box-shadow:0 3px 10px -4px color-mix(in srgb, var(--accent) 55%, transparent), inset 2px 2px 5px rgba(0,0,0,.25);
+    box-shadow:0 3px 10px -4px rgba(var(--accent-rgb),.55), inset 2px 2px 5px rgba(0,0,0,.25);
     transform:scale(.98);
   }
   .btn-danger{color:var(--danger);}
@@ -172,8 +174,8 @@
   /* reports */
   .report-count{background:var(--danger);color:#fff;font-size:10.5px;padding:1px 7px;border-radius:10px;margin-inline-start:4px;}
   .report-status{font-size:11.5px;padding:4px 10px;border-radius:10px;font-weight:700;white-space:nowrap;}
-  .report-status.open{background:color-mix(in srgb, var(--danger) 16%, var(--surface));color:var(--danger);}
-  .report-status.resolved{background:color-mix(in srgb, #22c55e 16%, var(--surface));color:#22c55e;}
+  .report-status.open{background:rgba(var(--danger-rgb),.16);color:var(--danger);}
+  .report-status.resolved{background:rgba(34,197,94,.16);color:#22c55e;}
   .stat-card b{display:block;font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--accent);}
   .stat-card span{color:var(--text-faint);font-size:12.5px;}
 
@@ -189,8 +191,17 @@
     background:var(--surface);
     box-shadow:inset 3px 3px 7px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
     transition:box-shadow .15s ease;
+    -webkit-appearance:none;-moz-appearance:none;appearance:none;
+    font-family:inherit;
   }
-  .field input:focus{outline:none;box-shadow:inset 3px 3px 7px var(--shadow-d), inset -3px -3px 7px var(--shadow-l), 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);}
+  .field select{padding-inline-end:38px;}
+  .select-wrap{position:relative;}
+  .select-wrap .select-arrow{
+    position:absolute;top:50%;left:14px;transform:translateY(-50%) rotate(90deg);
+    width:14px;height:14px;color:var(--text-faint);pointer-events:none;
+  }
+  .select-wrap .select-arrow svg{width:100%;height:100%;stroke:currentColor;}
+  .field input:focus, .field select:focus{outline:none;box-shadow:inset 3px 3px 7px var(--shadow-d), inset -3px -3px 7px var(--shadow-l), 0 0 0 2px rgba(var(--accent-rgb),.45);}
   .login-error{color:var(--danger);font-size:13px;margin:-6px 0 16px;min-height:16px;font-weight:600;}
   .login-submit{width:100%;padding:14px;font-size:15px;justify-content:center;margin-top:4px;}
   .demo-hint{margin-top:24px;padding:14px 16px;border-radius:14px;font-size:12.5px;color:var(--text-faint);line-height:1.8;}
@@ -210,6 +221,15 @@
   .topbar .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;}
   .topbar .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
   .topbar-right{display:flex;align-items:center;gap:10px;}
+  .mobile-more{display:none;}
+  @media(max-width:880px){
+    .topbar{padding:0 12px;}
+    .topbar-right{gap:6px;}
+    #report-btn, #profile-btn, #mode-toggle-btn, #theme-open-btn{display:none;}
+    .mobile-more{display:inline-flex;}
+    .user-chip{padding:5px;gap:6px;}
+    .user-chip #role-badge, .user-chip #user-name-display{display:none;}
+  }
 
   .user-chip{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:20px;}
   .user-avatar{
@@ -217,7 +237,7 @@
     background:linear-gradient(135deg, var(--accent), var(--accent-2));
     color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:0 0 auto;
   }
-  .role-badge{font-size:11px;padding:3px 9px;border-radius:10px;background:color-mix(in srgb, var(--accent) 16%, var(--surface));color:var(--accent);font-weight:700;}
+  .role-badge{font-size:11px;padding:3px 9px;border-radius:10px;background:rgba(var(--accent-rgb),.16);color:var(--accent);font-weight:700;}
 
   .app-body{flex:1 1 auto;display:flex;gap:18px;min-height:0;}
   .sidebar{
@@ -292,14 +312,14 @@
     transition:background .15s ease, transform .12s ease;
   }
   .list-row:not(:last-child){border-bottom:1px solid var(--border);}
-  .list-row:hover{background:color-mix(in srgb, var(--accent) 6%, transparent);}
+  .list-row:hover{background:rgba(var(--accent-rgb),.06);}
   .list-row:active{transform:scale(.99);}
   .list-panel .list-row:nth-child(1){animation-delay:.02s;} .list-panel .list-row:nth-child(2){animation-delay:.05s;}
   .list-panel .list-row:nth-child(3){animation-delay:.08s;} .list-panel .list-row:nth-child(4){animation-delay:.11s;}
   .list-panel .list-row:nth-child(n+5){animation-delay:.13s;}
   .list-row-icon{
     width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
-    background:color-mix(in srgb, var(--accent) 14%, var(--surface));color:var(--accent);
+    background:rgba(var(--accent-rgb),.14);color:var(--accent);
   }
   .list-row-icon svg{width:20px;height:20px;stroke:currentColor;}
   .list-row-main{flex:1;min-width:0;}
@@ -328,7 +348,7 @@
   .tile:active{box-shadow:inset 3px 3px 7px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);transform:translateY(0);}
   .tile-icon{
     width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-    background:color-mix(in srgb, var(--accent) 14%, var(--surface));color:var(--accent);margin-bottom:14px;
+    background:rgba(var(--accent-rgb),.14);color:var(--accent);margin-bottom:14px;
   }
   .tile-icon svg{width:20px;height:20px;stroke:currentColor;}
   .tile-name{font-size:16px;font-weight:800;margin:0 0 5px;}
@@ -376,7 +396,7 @@
 
   /* MODAL */
   .modal-backdrop{
-    position:fixed;inset:0;background:rgba(10,12,18,.45);backdrop-filter:blur(2px);
+    position:fixed;inset:0;background:rgba(10,12,18,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
     display:flex;align-items:center;justify-content:center;z-index:50;
     animation:fadeIn .15s ease both;padding:20px;
   }
@@ -427,11 +447,6 @@
       <div class="brand-mark"><span class="dot"></span> نظام الورشة الداخلي</div>
       <h1>دليل الأسعار<br>لموظفي الاستقبال والصيانة</h1>
       <p>اختر القسم، ثم الشركة، ثم الموديل — وتظهر لك كل التفاصيل والسعر والشروط فوراً، بدون الحاجة للرجوع لأحد.</p>
-      <div class="brand-stats">
-        <div class="stat-card neu-raised-sm"><b id="stat-categories">4</b><span>أقسام رئيسية</span></div>
-        <div class="stat-card neu-raised-sm"><b id="stat-companies">0</b><span>شركة مسجّلة</span></div>
-        <div class="stat-card neu-raised-sm"><b id="stat-models">0</b><span>موديل بالنظام</span></div>
-      </div>
     </div>
   </div>
   <div class="login-form-wrap">
@@ -449,9 +464,8 @@
       <div class="login-error" id="login-error"></div>
       <button type="submit" class="btn btn-primary login-submit">دخول</button>
       <div class="demo-hint neu-inset">
-        <b>حسابات تجريبية:</b><br>
-        مدير النظام — admin / admin123<br>
-        موظف — employee / 12345
+        <b>ملاحظة:</b> الدخول متاح فقط لحسابات الموظفين المصرح لها من إدارة الورشة.<br>
+        عند نسيان بيانات الدخول أو انتهاء صلاحية الحساب، يرجى مراجعة المدير لإعادة التفعيل.
       </div>
     </form>
   </div>
@@ -466,8 +480,9 @@
       <button class="btn btn-icon" id="profile-btn" title="ملفي الشخصي"></button>
       <button class="btn btn-icon" id="mode-toggle-btn" title="تبديل الوضع الداكن/الفاتح"></button>
       <button class="btn btn-icon" id="theme-open-btn" title="ألوان التصميم"></button>
+      <button class="btn btn-icon mobile-more" id="more-btn" title="القائمة"></button>
       <div class="user-chip neu-raised-sm">
-        <button class="btn btn-ghost btn-sm" id="logout-btn">خروج</button>
+        <button class="btn btn-sm" id="logout-btn">خروج</button>
         <span class="role-badge" id="role-badge"></span>
         <span id="user-name-display" style="font-weight:700;font-size:13.5px;"></span>
         <span class="user-avatar" id="user-avatar"></span>
@@ -512,7 +527,8 @@ const ICONS = {
   headset: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>',
   app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
   profile: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>',
-  flag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"/><path d="M4 4h13l-2.5 4L17 12H4"/></svg>'
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"/><path d="M4 4h13l-2.5 4L17 12H4"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>'
 };
 const ICON_CHOICES = ['gamepad','pc','key','cloud','headset','app','tv','phone'];
 const ACCENTS = [
@@ -629,17 +645,8 @@ const appScreen = document.getElementById('app-screen');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 
-async function loadPublicStats() {
-  try {
-    const s = await apiCall('public_stats', 'GET', null, false);
-    animateCount(document.getElementById('stat-categories'), s.categories);
-    animateCount(document.getElementById('stat-companies'), s.companies);
-    animateCount(document.getElementById('stat-models'), s.models);
-  } catch (e) {}
-}
-loadPublicStats();
-
 function animateCount(el, target){
+  if(!el) return;
   const start = Number(el.textContent) || 0;
   const dur = 500; const t0 = performance.now();
   function step(t){
@@ -648,6 +655,13 @@ function animateCount(el, target){
     if(p<1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
+}
+
+function computeLocalStats(){
+  const cats = Object.values(state.data.categories);
+  let companies = 0, models = 0;
+  cats.forEach(c=>{ companies += c.companies.length; c.companies.forEach(comp=>{ models += comp.models.length; }); });
+  return { categories: cats.length, companies, models };
 }
 
 loginForm.addEventListener('submit', async function(e){
@@ -681,6 +695,22 @@ async function enterApp(){
   try { await refreshData(); }
   catch (err) { doLogout(); loginError.textContent = err.message; return; }
   renderNav(); renderMain();
+  showFocusReminder();
+}
+
+function showFocusReminder(){
+  openModal(`
+    <div style="text-align:center;padding:8px 4px 4px;">
+      <div style="font-size:52px;margin-bottom:14px;line-height:1;">😊</div>
+      <h3 style="margin:0 0 6px;font-size:19px;">ابتسم وركز</h3>
+      <p style="color:var(--text-dim);font-size:14.5px;margin:0;">Smile and focus</p>
+    </div>
+    <div class="modal-actions" style="justify-content:center;margin-top:22px;">
+      <button class="btn btn-primary" id="focus-done">تم</button>
+    </div>`);
+  const doneBtn = document.getElementById('focus-done');
+  if(doneBtn) doneBtn.onclick = closeModal;
+  setTimeout(()=>{ if(document.getElementById('focus-done')) closeModal(); }, 5000);
 }
 
 async function refreshData(){
@@ -697,7 +727,7 @@ function doLogout(){
   state.token = null; state.currentUser = null;
   localStorage.removeItem('workshop_token'); localStorage.removeItem('workshop_user');
   appScreen.classList.add('hidden'); loginScreen.classList.remove('hidden');
-  loginForm.reset(); loadPublicStats();
+  loginForm.reset();
 }
 
 (async function tryResumeSession(){
@@ -763,6 +793,26 @@ document.getElementById('profile-btn').innerHTML = ICONS.profile;
 document.getElementById('profile-btn').addEventListener('click', goProfile);
 document.getElementById('report-btn').innerHTML = ICONS.flag;
 document.getElementById('report-btn').addEventListener('click', openReportModal);
+document.getElementById('more-btn').innerHTML = ICONS.more;
+document.getElementById('more-btn').addEventListener('click', openMoreMenu);
+
+function openMoreMenu(){
+  openModal(`
+    <h3>القائمة</h3>
+    <div class="list-panel neu-raised-sm">
+      <button class="list-row" id="mm-profile"><div class="list-row-icon">${ICONS.profile}</div><div class="list-row-main"><div class="list-row-title">ملفي الشخصي</div></div></button>
+      <button class="list-row" id="mm-report"><div class="list-row-icon">${ICONS.flag}</div><div class="list-row-main"><div class="list-row-title">إبلاغ عن مشكلة</div></div></button>
+      <button class="list-row" id="mm-mode"><div class="list-row-icon">${currentMode()==='dark'?ICONS.sun:ICONS.moon}</div><div class="list-row-main"><div class="list-row-title">${currentMode()==='dark'?'الوضع الفاتح':'الوضع الداكن'}</div></div></button>
+      <button class="list-row" id="mm-theme"><div class="list-row-icon">${ICONS.palette}</div><div class="list-row-main"><div class="list-row-title">ألوان التصميم</div></div></button>
+    </div>
+    <div class="modal-actions"><button class="btn" id="mm-close">إغلاق</button></div>
+  `);
+  document.getElementById('mm-profile').onclick = ()=>{ closeModal(); goProfile(); };
+  document.getElementById('mm-report').onclick = ()=>{ closeModal(); openReportModal(); };
+  document.getElementById('mm-mode').onclick = ()=>{ setMode(currentMode()==='dark'?'light':'dark'); closeModal(); };
+  document.getElementById('mm-theme').onclick = ()=>{ closeModal(); openThemeModal(); };
+  document.getElementById('mm-close').onclick = closeModal;
+}
 
 /* =========================================================
    SEARCH
@@ -842,7 +892,18 @@ function renderMain(){
   }
 
   if(!state.selCategory){
-    main.innerHTML = searchBarHTML() + `<div class="empty">اختر قسماً من القائمة للبدء، أو استخدم البحث فوگ</div>`;
+    const s = computeLocalStats();
+    main.innerHTML = searchBarHTML() + `
+      <h2 class="section-title">مرحباً، ${state.currentUser.name} 👋</h2>
+      <p class="section-sub">اختر قسماً من القائمة للبدء، أو استخدم البحث فوگ</p>
+      <div class="brand-stats">
+        <div class="stat-card neu-raised-sm"><b id="home-stat-categories">0</b><span>أقسام رئيسية</span></div>
+        <div class="stat-card neu-raised-sm"><b id="home-stat-companies">0</b><span>شركة مسجّلة</span></div>
+        <div class="stat-card neu-raised-sm"><b id="home-stat-models">0</b><span>خدمة بالنظام</span></div>
+      </div>`;
+    animateCount(document.getElementById('home-stat-categories'), s.categories);
+    animateCount(document.getElementById('home-stat-companies'), s.companies);
+    animateCount(document.getElementById('home-stat-models'), s.models);
     return;
   }
   const cat = state.data.categories[state.selCategory];
@@ -1181,7 +1242,7 @@ function bindAdminEvents(){
           await refreshData();
           if(state.adminCategory===id) state.adminCategory = Object.keys(state.data.categories)[0] || null;
           if(state.selCategory===id){ state.selCategory=null; state.selCompany=null; }
-          renderNav(); renderMain(); loadPublicStats();
+          renderNav(); renderMain();
         }catch(e){ alert(e.message); }
       });
     };
@@ -1279,7 +1340,7 @@ function openCategoryModal(categoryId){
     try{
       if(editing){ await apiCall('update_category','POST',{id: categoryId, name, icon: selectedIcon}); }
       else{ await apiCall('add_category','POST',{name, icon: selectedIcon}); }
-      await refreshData(); closeModal(); renderNav(); renderMain(); loadPublicStats();
+      await refreshData(); closeModal(); renderNav(); renderMain();
     }catch(e){ document.getElementById('mcat-error').textContent = e.message; }
   };
 }
@@ -1297,7 +1358,7 @@ function openCompanyModal(){
   document.getElementById('mc-save').onclick = async ()=>{
     const name = document.getElementById('mc-name').value.trim();
     if(!name){ return; }
-    try{ await apiCall('add_company','POST',{category_id: state.adminCategory, name}); await refreshData(); closeModal(); renderMain(); loadPublicStats(); }
+    try{ await apiCall('add_company','POST',{category_id: state.adminCategory, name}); await refreshData(); closeModal(); renderMain(); }
     catch(e){ document.getElementById('mc-error').textContent = e.message; }
   };
 }
@@ -1327,7 +1388,7 @@ function openModelModal(companyId, modelId){
     try{
       if(editing){ await apiCall('update_model','POST',{id: editing.id, name, price, specs, conditions}); }
       else{ await apiCall('add_model','POST',{company_id: companyId, name, price, specs, conditions}); }
-      await refreshData(); closeModal(); renderMain(); loadPublicStats();
+      await refreshData(); closeModal(); renderMain();
     }catch(e){ document.getElementById('mm-error').textContent = e.message; }
   };
 }
@@ -1341,10 +1402,13 @@ function openUserModal(username){
     <div class="field"><label>اسم المستخدم</label><input id="mu-username" value="${editing?editing.username:''}" ${editing?'disabled':''}></div>
     <div class="field"><label>كلمة المرور</label><input id="mu-password" placeholder="${editing?'اتركه فارغاً لعدم التغيير':''}"></div>
     <div class="field"><label>الصلاحية</label>
-      <select id="mu-role">
-        <option value="employee" ${editing&&editing.role==='employee'?'selected':''}>موظف</option>
-        <option value="admin" ${editing&&editing.role==='admin'?'selected':''}>مدير</option>
-      </select>
+      <div class="select-wrap">
+        <select id="mu-role">
+          <option value="employee" ${editing&&editing.role==='employee'?'selected':''}>موظف</option>
+          <option value="admin" ${editing&&editing.role==='admin'?'selected':''}>مدير</option>
+        </select>
+        <span class="select-arrow">${ICONS.chevron}</span>
+      </div>
     </div>
     <div class="field"><label>تاريخ انتهاء الحساب (اختياري)</label><input id="mu-expires" type="date" value="${expiresValue}"></div>
     <div class="login-error" id="mu-error"></div>

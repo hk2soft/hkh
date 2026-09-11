@@ -158,6 +158,22 @@
   .login-brand p{color:var(--text-dim);font-size:15.5px;line-height:1.9;max-width:440px;margin:0;}
   .brand-stats{display:flex;gap:16px;margin-top:38px;flex-wrap:wrap;}
   .stat-card{padding:16px 22px;border-radius:16px;min-width:110px;}
+
+  /* profile page */
+  .profile-head{display:flex;align-items:center;gap:16px;padding:20px;border-radius:20px;margin-bottom:20px;}
+  .profile-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
+  .profile-stats-grid .stat-card{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .usage-block{padding:18px 20px;border-radius:18px;margin-bottom:8px;}
+  .usage-track{height:14px;border-radius:20px;overflow:hidden;}
+  .usage-fill{height:100%;border-radius:20px;background:linear-gradient(90deg, var(--accent), var(--accent-2));transition:width .6s cubic-bezier(.34,1.2,.64,1);}
+  .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-inline-end:5px;animation:pulseDot 1.6s ease infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  /* reports */
+  .report-count{background:var(--danger);color:#fff;font-size:10.5px;padding:1px 7px;border-radius:10px;margin-inline-start:4px;}
+  .report-status{font-size:11.5px;padding:4px 10px;border-radius:10px;font-weight:700;white-space:nowrap;}
+  .report-status.open{background:color-mix(in srgb, var(--danger) 16%, var(--surface));color:var(--danger);}
+  .report-status.resolved{background:color-mix(in srgb, #22c55e 16%, var(--surface));color:#22c55e;}
   .stat-card b{display:block;font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--accent);}
   .stat-card span{color:var(--text-faint);font-size:12.5px;}
 
@@ -446,6 +462,8 @@
   <div class="topbar neu-raised">
     <div class="logo"><span class="dot"></span> نظام الورشة</div>
     <div class="topbar-right">
+      <button class="btn btn-icon" id="report-btn" title="إبلاغ عن مشكلة"></button>
+      <button class="btn btn-icon" id="profile-btn" title="ملفي الشخصي"></button>
       <button class="btn btn-icon" id="mode-toggle-btn" title="تبديل الوضع الداكن/الفاتح"></button>
       <button class="btn btn-icon" id="theme-open-btn" title="ألوان التصميم"></button>
       <div class="user-chip neu-raised-sm">
@@ -492,7 +510,9 @@ const ICONS = {
   key: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5L18 10M12.5 10.5L15 13"/></svg>',
   cloud: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
   headset: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>',
-  app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>'
+  app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
+  profile: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"/><path d="M4 4h13l-2.5 4L17 12H4"/></svg>'
 };
 const ICON_CHOICES = ['gamepad','pc','key','cloud','headset','app','tv','phone'];
 const ACCENTS = [
@@ -571,13 +591,15 @@ function swatchColor(id){
 /* =========================================================
    API HELPER
 ========================================================= */
-async function apiCall(action, method = 'GET', body = null, auth = true) {
+async function apiCall(action, method = 'GET', body = null, auth = true, params = null) {
   const opts = { method, headers: {} };
   if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
   if (auth && state.token) opts.headers['Authorization'] = 'Bearer ' + state.token;
+  let url = `${API_BASE_URL}?action=${action}`;
+  if (params) url += '&' + new URLSearchParams(params).toString();
   let res, data;
   try {
-    res = await fetch(`${API_BASE_URL}?action=${action}`, opts);
+    res = await fetch(url, opts);
     data = await res.json();
   } catch (e) {
     throw new Error('تعذر الوصول للسيرفر. تأكد من رابط API_BASE_URL ومن اتصال الإنترنت');
@@ -592,7 +614,7 @@ async function apiCall(action, method = 'GET', body = null, auth = true) {
 let state = {
   token: localStorage.getItem('workshop_token') || null,
   currentUser: JSON.parse(localStorage.getItem('workshop_user') || 'null'),
-  data: { categories: {}, users: [] },
+  data: { categories: {}, users: [], reports: [] },
   selCategory: null, selCompany: null, searchQuery: '',
   view: 'browse', adminTab: 'catalog', adminCategory: null
 };
@@ -733,6 +755,14 @@ async function goAdmin(){
   state.adminCategory = state.adminCategory || Object.keys(state.data.categories)[0];
   renderNav(); renderMain();
 }
+async function goProfile(){
+  state.view='profile';
+  renderNav(); renderMain();
+}
+document.getElementById('profile-btn').innerHTML = ICONS.profile;
+document.getElementById('profile-btn').addEventListener('click', goProfile);
+document.getElementById('report-btn').innerHTML = ICONS.flag;
+document.getElementById('report-btn').addEventListener('click', openReportModal);
 
 /* =========================================================
    SEARCH
@@ -786,6 +816,7 @@ function searchBarHTML(){
 function renderMain(){
   const main = document.getElementById('main');
   if(state.view==='admin'){ renderAdmin(); return; }
+  if(state.view==='profile'){ renderProfile(); return; }
 
   const q = (state.searchQuery||'').trim();
   if(q){
@@ -898,11 +929,140 @@ function openServiceModal(catId, compId, modelId){
 /* =========================================================
    ADMIN VIEW
 ========================================================= */
+/* =========================================================
+   PROFILE
+========================================================= */
+function fmtDateTime(s){
+  if(!s) return '—';
+  const d = new Date(s.replace(' ','T'));
+  return d.toLocaleString('ar-IQ', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function fmtDate(s){
+  if(!s) return 'بدون تاريخ انتهاء';
+  const d = new Date(s.replace(' ','T'));
+  return d.toLocaleDateString('ar-IQ', {year:'numeric',month:'short',day:'numeric'});
+}
+function fmtDuration(startS, endS){
+  const start = new Date(startS.replace(' ','T'));
+  const end = endS ? new Date(endS.replace(' ','T')) : new Date();
+  let mins = Math.round((end-start)/60000);
+  if(mins < 1) return 'أقل من دقيقة';
+  const h = Math.floor(mins/60); const m = mins%60;
+  if(h===0) return `${m} دقيقة`;
+  if(m===0) return `${h} ساعة`;
+  return `${h} ساعة و${m} دقيقة`;
+}
+
+function profileContentHTML(data, isExpired){
+  const u = data.user;
+  const pct = data.usage_percent;
+  let html = `
+    <div class="profile-head neu-raised-sm">
+      <div class="user-avatar" style="width:56px;height:56px;font-size:20px;">${u.name.trim()[0]||'?'}</div>
+      <div>
+        <h2 style="margin:0 0 4px;font-size:19px;font-weight:800;">${u.name}</h2>
+        <div style="color:var(--text-faint);font-size:13px;">${u.username} · <span class="role-badge">${u.role==='admin'?'مدير':'موظف'}</span></div>
+      </div>
+    </div>
+    <div class="profile-stats-grid">
+      <div class="stat-card neu-raised-sm"><span style="color:var(--text-faint);font-size:12px;">تاريخ إنشاء الحساب</span><b style="font-size:14px;font-family:'Cairo';">${fmtDate(u.created_at)}</b></div>
+      <div class="stat-card neu-raised-sm"><span style="color:var(--text-faint);font-size:12px;">تاريخ انتهاء الحساب</span><b style="font-size:14px;font-family:'Cairo';color:${isExpired?'var(--danger)':'var(--text)'};">${fmtDate(u.expires_at)}</b></div>
+      <div class="stat-card neu-raised-sm"><span style="color:var(--text-faint);font-size:12px;">ساعات الاستخدام (٧ أيام)</span><b style="font-size:14px;font-family:'Cairo';">${data.usage_hours} ساعة</b></div>
+    </div>
+    <div class="usage-block neu-raised-sm">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-weight:700;font-size:13.5px;">نسبة استخدام الموقع خلال الأسبوع</span>
+        <span class="mono" style="color:var(--accent);font-weight:700;">${pct}%</span>
+      </div>
+      <div class="usage-track neu-inset"><div class="usage-fill" style="width:${pct}%"></div></div>
+    </div>
+    <h4 style="font-size:13.5px;color:var(--text-dim);font-weight:800;margin:24px 0 12px;">سجل الدخول والخروج</h4>
+    <div class="list-panel neu-raised-sm">`;
+  if(data.logs.length===0){
+    html += `<div class="empty" style="padding:26px;">لا يوجد سجل دخول بعد</div>`;
+  }else{
+    data.logs.forEach(l=>{
+      const stillIn = !l.logout_at;
+      html += `<div class="list-row" style="cursor:default;">
+        <div class="list-row-main">
+          <div class="list-row-title" style="font-size:13.5px;">${fmtDateTime(l.login_at)}</div>
+          <div class="list-row-sub">${stillIn ? '<span class="live-dot"></span> لا يزال متصل' : 'خروج: '+fmtDateTime(l.logout_at)}</div>
+        </div>
+        <div class="list-row-trail"><span class="list-row-price mono" style="color:var(--text-dim);">${fmtDuration(l.login_at, l.logout_at)}</span></div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+async function renderProfile(){
+  const main = document.getElementById('main');
+  main.innerHTML = `<div class="empty">جاري التحميل...</div>`;
+  try{
+    const data = await apiCall('my_profile');
+    const isExpired = data.user.expires_at && new Date(data.user.expires_at.replace(' ','T')) < new Date();
+    main.innerHTML = `<h2 class="section-title">ملفي الشخصي</h2><p class="section-sub">معلومات حسابك وسجل استخدامك للموقع</p>` + profileContentHTML(data, isExpired);
+  }catch(e){
+    main.innerHTML = `<div class="empty">${e.message}</div>`;
+  }
+}
+
+async function openUserProfileModal(username){
+  openModal(`<div class="empty">جاري التحميل...</div>`, 'modal-wide');
+  try{
+    const data = await apiCall('user_profile','GET',null,true,{username});
+    const isExpired = data.user.expires_at && new Date(data.user.expires_at.replace(' ','T')) < new Date();
+    openModal(profileContentHTML(data, isExpired) + `<div class="modal-actions"><button class="btn btn-primary" id="up-close">إغلاق</button></div>`, 'modal-wide');
+    document.getElementById('up-close').onclick = closeModal;
+  }catch(e){
+    openModal(`<div class="empty">${e.message}</div><div class="modal-actions"><button class="btn" id="up-close2">إغلاق</button></div>`);
+    document.getElementById('up-close2').onclick = closeModal;
+  }
+}
+
+/* =========================================================
+   REPORTS
+========================================================= */
+function openReportModal(){
+  const contextLabel = (state.selCategory && state.data.categories[state.selCategory])
+    ? `سيتم إرفاق السياق الحالي: ${state.data.categories[state.selCategory].name}${state.selCompany ? ' · ' + companyById(state.data.categories[state.selCategory], state.selCompany).name : ''}`
+    : 'بدون سياق محدد — بلاغ عام';
+  openModal(`
+    <h3>إبلاغ عن مشكلة أو خدمة</h3>
+    <p style="color:var(--text-faint);font-size:12.5px;margin:-10px 0 18px;">${contextLabel}</p>
+    <div class="field"><label>وصف المشكلة</label><textarea id="rp-message" placeholder="اكتب وصف المشكلة أو الملاحظة هنا..." style="min-height:110px;"></textarea></div>
+    <div class="login-error" id="rp-error"></div>
+    <div class="modal-actions">
+      <button class="btn" id="rp-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="rp-send">إرسال البلاغ</button>
+    </div>`);
+  document.getElementById('rp-cancel').onclick = closeModal;
+  document.getElementById('rp-send').onclick = async ()=>{
+    const message = document.getElementById('rp-message').value.trim();
+    if(!message){ document.getElementById('rp-error').textContent='اكتب وصف المشكلة أولاً'; return; }
+    try{
+      await apiCall('add_report','POST',{
+        message,
+        category_id: state.selCategory || null,
+        company_id: state.selCompany || null,
+        model_id: null
+      });
+      openModal(`<div class="empty" style="padding:40px 20px;">✅ تم إرسال البلاغ، شكراً لك</div><div class="modal-actions"><button class="btn btn-primary" id="rp-done">تم</button></div>`);
+      document.getElementById('rp-done').onclick = closeModal;
+    }catch(e){ document.getElementById('rp-error').textContent = e.message; }
+  };
+}
+
 async function renderAdmin(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="empty">جاري التحميل...</div>`;
   if (state.adminTab === 'users' && !state._usersLoaded) {
     try { const res = await apiCall('list_users'); state.data.users = res.users; state._usersLoaded = true; }
+    catch (e) { main.innerHTML = `<div class="empty">${e.message}</div>`; return; }
+  }
+  if (state.adminTab === 'reports' && !state._reportsLoaded) {
+    try { const res = await apiCall('list_reports'); state.data.reports = res.reports; state._reportsLoaded = true; }
     catch (e) { main.innerHTML = `<div class="empty">${e.message}</div>`; return; }
   }
   main.innerHTML = adminHTML();
@@ -915,6 +1075,7 @@ function adminHTML(){
     <button class="admin-tab ${state.adminTab==='categories'?'active':''}" data-tab="categories">الأقسام</button>
     <button class="admin-tab ${state.adminTab==='catalog'?'active':''}" data-tab="catalog">الشركات والخدمات</button>
     <button class="admin-tab ${state.adminTab==='users'?'active':''}" data-tab="users">حسابات المستخدمين</button>
+    <button class="admin-tab ${state.adminTab==='reports'?'active':''}" data-tab="reports">البلاغات${(state.data.reports||[]).filter(r=>r.status==='open').length ? ` <span class="report-count">${(state.data.reports||[]).filter(r=>r.status==='open').length}</span>` : ''}</button>
   </div>`;
 
   if(state.adminTab==='categories'){
@@ -960,18 +1121,45 @@ function adminHTML(){
       });
       html += `</div>`;
     });
-  } else {
+  } else if(state.adminTab==='users'){
     html += `<div class="admin-section-head"><h3>حسابات الدخول</h3>
       <button class="btn btn-primary btn-sm" id="btn-add-user">${ICONS.plus} إضافة مستخدم</button></div>`;
     state.data.users.forEach(u=>{
+      const expired = u.expires_at && new Date(u.expires_at.replace(' ','T')) < new Date();
       html += `<div class="admin-row neu-raised-sm">
-        <div class="admin-row-info"><b>${u.name}</b><span>${u.username} · ${u.role==='admin'?'مدير':'موظف'}</span></div>
+        <div class="list-row-icon" style="margin-inline-end:2px;">${ICONS.profile}</div>
+        <div class="admin-row-info" style="flex:1;">
+          <b>${u.name}</b>
+          <span>${u.username} · ${u.role==='admin'?'مدير':'موظف'} · إنشاء: ${fmtDate(u.created_at)} · انتهاء: <span style="${expired?'color:var(--danger);font-weight:700;':''}">${fmtDate(u.expires_at)}</span> · آخر دخول: ${u.last_login ? fmtDateTime(u.last_login) : 'لم يسجل دخول بعد'}</span>
+        </div>
         <div class="admin-row-actions">
+          <button class="btn btn-sm" data-view-profile="${u.username}">${ICONS.profile}</button>
           <button class="btn btn-sm" data-edit-user="${u.username}">${ICONS.edit}</button>
           <button class="btn btn-danger btn-sm" data-del-user="${u.username}">${ICONS.trash}</button>
         </div>
       </div>`;
     });
+  } else {
+    html += `<div class="admin-section-head"><h3>البلاغات الواردة</h3></div>`;
+    const reports = state.data.reports || [];
+    if(reports.length===0){
+      html += `<div class="empty">لا توجد بلاغات حتى الآن</div>`;
+    }else{
+      reports.forEach(r=>{
+        const context = [r.category_id, r.company_id].filter(Boolean).join(' · ');
+        html += `<div class="admin-row neu-raised-sm" style="align-items:flex-start;">
+          <div class="admin-row-info" style="flex:1;">
+            <b>${r.user_name || r.username}</b>
+            <span>${fmtDateTime(r.created_at)}${context ? ' · '+context : ''}</span>
+            <p style="margin:8px 0 0;font-size:13.5px;color:var(--text);line-height:1.7;">${r.message}</p>
+          </div>
+          <div class="admin-row-actions">
+            <span class="report-status ${r.status}">${r.status==='resolved'?'تم الحل':'مفتوح'}</span>
+            <button class="btn btn-sm" data-toggle-report="${r.id}|${r.status}">${r.status==='resolved'?'إعادة فتح':'وضع كمحلول'}</button>
+          </div>
+        </div>`;
+      });
+    }
   }
   return html;
 }
@@ -1018,6 +1206,18 @@ function bindAdminEvents(){
     };
   });
   document.querySelectorAll('[data-edit-user]').forEach(el=>{ el.onclick = ()=> openUserModal(el.dataset.editUser); });
+  document.querySelectorAll('[data-view-profile]').forEach(el=>{ el.onclick = ()=> openUserProfileModal(el.dataset.viewProfile); });
+  document.querySelectorAll('[data-toggle-report]').forEach(el=>{
+    el.onclick = async ()=>{
+      const [id, curStatus] = el.dataset.toggleReport.split('|');
+      const newStatus = curStatus === 'resolved' ? 'open' : 'resolved';
+      try{
+        await apiCall('update_report','POST',{id, status:newStatus});
+        const res = await apiCall('list_reports'); state.data.reports = res.reports;
+        renderMain();
+      }catch(e){ alert(e.message); }
+    };
+  });
   document.querySelectorAll('[data-del-user]').forEach(el=>{
     el.onclick = ()=>{
       const username = el.dataset.delUser;
@@ -1134,6 +1334,7 @@ function openModelModal(companyId, modelId){
 
 function openUserModal(username){
   const editing = username ? state.data.users.find(u=>u.username===username) : null;
+  const expiresValue = (editing && editing.expires_at) ? editing.expires_at.slice(0,10) : '';
   openModal(`
     <h3>${editing?'تعديل المستخدم':'إضافة مستخدم جديد'}</h3>
     <div class="field"><label>الاسم الكامل</label><input id="mu-name" value="${editing?editing.name:''}"></div>
@@ -1145,6 +1346,7 @@ function openUserModal(username){
         <option value="admin" ${editing&&editing.role==='admin'?'selected':''}>مدير</option>
       </select>
     </div>
+    <div class="field"><label>تاريخ انتهاء الحساب (اختياري)</label><input id="mu-expires" type="date" value="${expiresValue}"></div>
     <div class="login-error" id="mu-error"></div>
     <div class="modal-actions">
       <button class="btn" id="mu-cancel">إلغاء</button>
@@ -1156,11 +1358,12 @@ function openUserModal(username){
     const uname = document.getElementById('mu-username').value.trim();
     const pass = document.getElementById('mu-password').value;
     const role = document.getElementById('mu-role').value;
+    const expires_at = document.getElementById('mu-expires').value;
     if(!name || !uname){ return; }
     if(!editing && !pass){ document.getElementById('mu-error').textContent='كلمة المرور مطلوبة'; return; }
     try{
-      if(editing){ await apiCall('update_user','POST',{username: uname, name, role, password: pass}); }
-      else{ await apiCall('add_user','POST',{username: uname, name, role, password: pass}); }
+      if(editing){ await apiCall('update_user','POST',{username: uname, name, role, password: pass, expires_at}); }
+      else{ await apiCall('add_user','POST',{username: uname, name, role, password: pass, expires_at}); }
       const res = await apiCall('list_users'); state.data.users = res.users;
       closeModal(); renderMain();
     }catch(e){ document.getElementById('mu-error').textContent = e.message; }

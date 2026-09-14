@@ -374,6 +374,43 @@
   .list-row:hover .list-row-view-btn{background:rgba(var(--accent-rgb),.2);}
 
   .modal-wide{max-width:560px;}
+
+  /* home page */
+  .home-section-head{display:flex;justify-content:space-between;align-items:center;margin:30px 0 16px;flex-wrap:wrap;gap:10px;}
+  .home-section-head h3{font-size:16px;margin:0;font-weight:800;}
+  .announcement-list{display:flex;flex-direction:column;gap:10px;}
+  .announcement-card{display:flex;gap:14px;padding:16px 18px;border-radius:16px;animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;}
+  .announcement-icon{
+    width:38px;height:38px;border-radius:12px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:rgba(var(--accent-rgb),.16);color:var(--accent);
+  }
+  .announcement-icon svg{width:18px;height:18px;stroke:currentColor;}
+
+  /* solutions / posts */
+  .solutions-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
+  .post-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;}
+  .post-card{
+    border-radius:18px;overflow:hidden;text-align:right;display:flex;flex-direction:column;
+    animation:popIn .38s cubic-bezier(.34,1.56,.64,1) both;
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  }
+  .post-card:hover{transform:translateY(-3px);}
+  .post-card-image{
+    height:120px;background-size:cover;background-position:center;background-color:var(--surface-alt);
+    display:flex;align-items:center;justify-content:center;color:var(--text-faint);
+  }
+  .post-card-image svg{width:30px;height:30px;stroke:currentColor;}
+  .post-card-body{padding:16px;display:flex;flex-direction:column;gap:6px;}
+  .post-tag{
+    align-self:flex-start;font-size:11px;font-weight:700;color:var(--accent);
+    background:rgba(var(--accent-rgb),.14);padding:3px 10px;border-radius:9px;
+  }
+  .post-card-title{font-size:14.5px;font-weight:800;line-height:1.5;}
+  .post-card-snippet{font-size:12.5px;color:var(--text-dim);line-height:1.6;}
+  .post-card-date{font-size:11px;color:var(--text-faint);margin-top:4px;}
+  .post-modal-image{width:100%;height:200px;border-radius:16px;background-size:cover;background-position:center;background-color:var(--surface-alt);}
+  .image-upload-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .image-upload-btn{cursor:pointer;}
   .detail-price-box{
     display:flex;align-items:baseline;gap:8px;justify-content:center;
     padding:20px;border-radius:16px;margin-bottom:6px;
@@ -578,7 +615,12 @@ const ICONS = {
   app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
   profile: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>',
   flag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"/><path d="M4 4h13l-2.5 4L17 12H4"/></svg>',
-  more: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>'
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  article: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
+  megaphone: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h2l5 4V6l-5 4H4a1 1 0 0 0-1 1z"/><path d="M15 9a3 3 0 0 1 0 6M18 6a7 7 0 0 1 0 12"/></svg>'
 };
 const ICON_CHOICES = ['gamepad','pc','key','cloud','headset','app','tv','phone'];
 const ICON_COLORS = {
@@ -718,7 +760,8 @@ async function apiCall(action, method = 'GET', body = null, auth = true, params 
 let state = {
   token: localStorage.getItem('workshop_token') || null,
   currentUser: JSON.parse(localStorage.getItem('workshop_user') || 'null'),
-  data: { categories: {}, users: [], reports: [] },
+  data: { categories: {}, users: [], reports: [], announcements: [], posts: [] },
+  postsFilter: '',
   selCategory: null, selCompany: null, searchQuery: '',
   view: 'browse', adminTab: 'catalog', adminCategory: null
 };
@@ -798,7 +841,7 @@ function forceSessionExpiry(){
 
 async function enterApp(){
   state.selCategory = null; state.selCompany = null; state.selModel = null;
-  state.view = 'browse';
+  state.view = 'home';
   loginScreen.classList.add('hidden');
   appScreen.classList.remove('hidden');
   document.getElementById('user-name-display').textContent = state.currentUser.name;
@@ -862,11 +905,17 @@ function doLogout(){
 ========================================================= */
 function navItemsList(){
   const cats = state.data.categories;
-  const items = Object.keys(cats).map(catId=>({
-    id: catId, label: cats[catId].name, icon: ICONS[cats[catId].icon] || ICONS.gamepad,
-    active: state.view==='browse' && state.selCategory===catId,
-    onClick: `goCategory('${catId}')`
-  }));
+  const items = [
+    { id:'home', label:'الرئيسية', icon: ICONS.home, active: state.view==='home', onClick:'goHome()' }
+  ];
+  Object.keys(cats).forEach(catId=>{
+    items.push({
+      id: catId, label: cats[catId].name, icon: ICONS[cats[catId].icon] || ICONS.gamepad,
+      active: state.view==='browse' && state.selCategory===catId,
+      onClick: `goCategory('${catId}')`
+    });
+  });
+  items.push({ id:'solutions', label:'الحلول', icon: ICONS.article, active: state.view==='solutions', onClick:'goSolutions()' });
   if(state.currentUser.role==='admin'){
     items.push({ id:'admin', label:'لوحة التحكم', icon: ICONS.settings, active: state.view==='admin', onClick:'goAdmin()' });
   }
@@ -875,11 +924,11 @@ function navItemsList(){
 
 function renderNav(){
   const items = navItemsList();
-  const catItems = items.filter(i=>i.id!=='admin');
+  const mainItems = items.filter(i=>i.id!=='admin');
   const adminItem = items.find(i=>i.id==='admin');
 
-  let sbHtml = '<div class="sidebar-label">الأقسام</div>';
-  catItems.forEach(it=>{
+  let sbHtml = '';
+  mainItems.forEach(it=>{
     sbHtml += `<button class="nav-item ${it.active?'active':''}" onclick="${it.onClick}">${it.icon}<span>${it.label}</span></button>`;
   });
   sbHtml += '<div class="sidebar-spacer"></div>';
@@ -905,6 +954,14 @@ async function goAdmin(){
 }
 async function goProfile(){
   state.view='profile';
+  renderNav(); renderMain();
+}
+async function goHome(){
+  state.view='home'; state.searchQuery='';
+  renderNav(); renderMain();
+}
+async function goSolutions(){
+  state.view='solutions'; state.searchQuery='';
   renderNav(); renderMain();
 }
 document.getElementById('profile-btn').innerHTML = ICONS.profile;
@@ -985,6 +1042,8 @@ function renderMain(){
   const main = document.getElementById('main');
   if(state.view==='admin'){ renderAdmin(); return; }
   if(state.view==='profile'){ renderProfile(); return; }
+  if(state.view==='home'){ renderHome(); return; }
+  if(state.view==='solutions'){ renderSolutions(); return; }
 
   const q = (state.searchQuery||'').trim();
   if(q){
@@ -1009,21 +1068,7 @@ function renderMain(){
     return;
   }
 
-  if(!state.selCategory){
-    const s = computeLocalStats();
-    main.innerHTML = searchBarHTML() + `
-      <h2 class="section-title">مرحباً، ${state.currentUser.name} 👋</h2>
-      <p class="section-sub">اختر قسماً من القائمة للبدء، أو استخدم البحث فوگ</p>
-      <div class="brand-stats">
-        <div class="stat-card neu-raised-sm"><b id="home-stat-categories">0</b><span>أقسام رئيسية</span></div>
-        <div class="stat-card neu-raised-sm"><b id="home-stat-companies">0</b><span>شركة مسجّلة</span></div>
-        <div class="stat-card neu-raised-sm"><b id="home-stat-models">0</b><span>خدمة بالنظام</span></div>
-      </div>`;
-    animateCount(document.getElementById('home-stat-categories'), s.categories);
-    animateCount(document.getElementById('home-stat-companies'), s.companies);
-    animateCount(document.getElementById('home-stat-models'), s.models);
-    return;
-  }
+  if(!state.selCategory){ goHome(); return; }
   const cat = state.data.categories[state.selCategory];
 
   let crumb = `<div class="breadcrumb">`;
@@ -1265,6 +1310,261 @@ function openReportModal(){
       openModal(`<div class="empty" style="padding:40px 20px;">✅ تم إرسال البلاغ، شكراً لك</div><div class="modal-actions"><button class="btn btn-primary" id="rp-done">تم</button></div>`);
       document.getElementById('rp-done').onclick = closeModal;
     }catch(e){ document.getElementById('rp-error').textContent = e.message; }
+  };
+}
+
+/* =========================================================
+   HOME (announcements + recent services)
+========================================================= */
+function computeRecentModels(limit){
+  const out = [];
+  Object.entries(state.data.categories).forEach(([catId, cat])=>{
+    cat.companies.forEach(comp=>{
+      comp.models.forEach(model=>{
+        out.push({ catId, catName: cat.name, comp, model });
+      });
+    });
+  });
+  out.sort((a,b)=> new Date(b.model.created_at||0) - new Date(a.model.created_at||0));
+  return out.slice(0, limit);
+}
+
+async function renderHome(){
+  const main = document.getElementById('main');
+  const s = computeLocalStats();
+  const recent = computeRecentModels(6);
+
+  if(!state._announcementsLoaded){
+    try{ const res = await apiCall('list_announcements'); state.data.announcements = res.announcements; state._announcementsLoaded = true; }
+    catch(e){}
+  }
+  const isAdmin = state.currentUser.role==='admin';
+
+  let html = `
+    <h2 class="section-title">مرحباً، ${state.currentUser.name} 👋</h2>
+    <p class="section-sub">نظرة سريعة على الموقع والتحديثات الأخيرة</p>
+    <div class="brand-stats">
+      <div class="stat-card neu-raised-sm"><b id="home-stat-categories">0</b><span>أقسام رئيسية</span></div>
+      <div class="stat-card neu-raised-sm"><b id="home-stat-companies">0</b><span>شركة مسجّلة</span></div>
+      <div class="stat-card neu-raised-sm"><b id="home-stat-models">0</b><span>خدمة بالنظام</span></div>
+    </div>
+
+    <div class="home-section-head"><h3>آخر الخدمات المضافة</h3></div>`;
+
+  if(recent.length===0){
+    html += `<div class="empty">لا توجد خدمات مضافة بعد</div>`;
+  }else{
+    html += `<div class="grid">` + recent.map(r=>`
+      <button class="tile neu-raised-sm" onclick="openServiceModal('${r.catId}','${r.comp.id}','${r.model.id}')">
+        <div class="tile-icon" style="${iconBadgeStyle(state.data.categories[r.catId].icon)}">${ICONS[state.data.categories[r.catId].icon] || ICONS.gamepad}</div>
+        <div class="tile-name">${r.model.name}</div>
+        <div class="tile-meta">${r.catName} · ${r.comp.name}</div>
+        <div class="tile-price">${fmtPrice(r.model.price)} د.ع</div>
+      </button>`).join('') + `</div>`;
+  }
+
+  html += `<div class="home-section-head" style="margin-top:30px;">
+      <h3>التبليغات والإعلانات</h3>
+      ${isAdmin ? `<button class="btn btn-primary btn-sm" id="btn-add-announcement">${ICONS.plus} إضافة تبليغ</button>` : ''}
+    </div>`;
+
+  if(state.data.announcements.length===0){
+    html += `<div class="empty">لا توجد تبليغات حالياً</div>`;
+  }else{
+    html += `<div class="announcement-list">` + state.data.announcements.map(a=>`
+      <div class="announcement-card neu-raised-sm">
+        <div class="announcement-icon">${ICONS.megaphone}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+            <b style="font-size:14.5px;">${a.title}</b>
+            ${isAdmin ? `<button class="btn btn-sm btn-danger" data-del-announcement="${a.id}">${ICONS.trash}</button>` : ''}
+          </div>
+          <p style="margin:6px 0 8px;font-size:13.5px;color:var(--text);line-height:1.7;">${a.message}</p>
+          <span style="font-size:11.5px;color:var(--text-faint);">${a.author_name || ''} · ${fmtDateTime(a.created_at)}</span>
+        </div>
+      </div>`).join('') + `</div>`;
+  }
+
+  main.innerHTML = searchBarHTML() + html;
+  animateCount(document.getElementById('home-stat-categories'), s.categories);
+  animateCount(document.getElementById('home-stat-companies'), s.companies);
+  animateCount(document.getElementById('home-stat-models'), s.models);
+
+  const addBtn = document.getElementById('btn-add-announcement');
+  if(addBtn) addBtn.onclick = openAnnouncementModal;
+  document.querySelectorAll('[data-del-announcement]').forEach(el=>{
+    el.onclick = ()=>{
+      const id = el.dataset.delAnnouncement;
+      confirmModal('حذف التبليغ؟','سيختفي هذا التبليغ من الصفحة الرئيسية لكل الموظفين.', async ()=>{
+        try{ await apiCall('delete_announcement','POST',{id}); const res = await apiCall('list_announcements'); state.data.announcements = res.announcements; renderMain(); }
+        catch(e){ alert(e.message); }
+      });
+    };
+  });
+}
+
+function openAnnouncementModal(){
+  openModal(`
+    <h3>إضافة تبليغ جديد</h3>
+    <div class="field"><label>العنوان</label><input id="an-title" placeholder="مثال: تحديث الأسعار"></div>
+    <div class="field"><label>الرسالة</label><textarea id="an-message" placeholder="تفاصيل التبليغ..." style="min-height:100px;"></textarea></div>
+    <div class="login-error" id="an-error"></div>
+    <div class="modal-actions">
+      <button class="btn" id="an-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="an-save">نشر التبليغ</button>
+    </div>`);
+  document.getElementById('an-cancel').onclick = closeModal;
+  document.getElementById('an-save').onclick = async ()=>{
+    const title = document.getElementById('an-title').value.trim();
+    const message = document.getElementById('an-message').value.trim();
+    if(!title || !message){ document.getElementById('an-error').textContent='العنوان والرسالة مطلوبان'; return; }
+    try{
+      await apiCall('add_announcement','POST',{title, message});
+      const res = await apiCall('list_announcements'); state.data.announcements = res.announcements;
+      closeModal(); renderMain();
+    }catch(e){ document.getElementById('an-error').textContent = e.message; }
+  };
+}
+
+/* =========================================================
+   SOLUTIONS (brand-tagged articles with images)
+========================================================= */
+function flattenCompanies(){
+  const out = [];
+  Object.entries(state.data.categories).forEach(([catId, cat])=>{
+    cat.companies.forEach(comp=> out.push({ id: comp.id, label: `${cat.name} — ${comp.name}` }));
+  });
+  return out;
+}
+
+async function renderSolutions(){
+  const main = document.getElementById('main');
+  main.innerHTML = `<div class="empty">جاري التحميل...</div>`;
+  try{
+    const res = await apiCall('list_posts', 'GET', null, true, state.postsFilter ? {company_id: state.postsFilter} : null);
+    state.data.posts = res.posts;
+  }catch(e){ main.innerHTML = `<div class="empty">${e.message}</div>`; return; }
+
+  const isAdmin = state.currentUser.role==='admin';
+  const companies = flattenCompanies();
+
+  let html = `<h2 class="section-title">الحلول</h2><p class="section-sub">مقالات وحلول تقنية مصنّفة حسب الشركة</p>`;
+  html += `<div class="solutions-toolbar">
+    <div class="select-wrap" style="flex:1;max-width:280px;">
+      <select id="sol-filter">
+        <option value="">كل الشركات</option>
+        ${companies.map(c=>`<option value="${c.id}" ${state.postsFilter===c.id?'selected':''}>${c.label}</option>`).join('')}
+      </select>
+      <span class="select-arrow">${ICONS.chevron}</span>
+    </div>
+    ${isAdmin ? `<button class="btn btn-primary btn-sm" id="btn-add-post">${ICONS.plus} إضافة حل جديد</button>` : ''}
+  </div>`;
+
+  if(state.data.posts.length===0){
+    html += `<div class="empty">لا توجد حلول مضافة بعد</div>`;
+  }else{
+    html += `<div class="post-grid">` + state.data.posts.map(p=>`
+      <button class="post-card neu-raised-sm" data-open-post="${p.id}">
+        <div class="post-card-image" style="${p.image_url?`background-image:url('${p.image_url}')`:''}">${p.image_url?'':ICONS.image}</div>
+        <div class="post-card-body">
+          ${p.company_name ? `<span class="post-tag">${p.company_name}</span>` : ''}
+          <div class="post-card-title">${p.title}</div>
+          <div class="post-card-snippet">${(p.body||'').slice(0,90)}${p.body.length>90?'…':''}</div>
+          <div class="post-card-date">${fmtDate(p.created_at)}</div>
+        </div>
+      </button>`).join('') + `</div>`;
+  }
+
+  main.innerHTML = html;
+
+  document.getElementById('sol-filter').onchange = (e)=>{ state.postsFilter = e.target.value; renderMain(); };
+  const addBtn = document.getElementById('btn-add-post'); if(addBtn) addBtn.onclick = ()=> openPostModal();
+  document.querySelectorAll('[data-open-post]').forEach(el=>{
+    el.onclick = ()=> openPostViewModal(el.dataset.openPost);
+  });
+}
+
+function openPostViewModal(postId){
+  const p = state.data.posts.find(x=>x.id===postId);
+  if(!p) return;
+  const isAdmin = state.currentUser.role==='admin';
+  openModal(`
+    ${p.image_url ? `<div class="post-modal-image" style="background-image:url('${p.image_url}')"></div>` : ''}
+    ${p.company_name ? `<span class="post-tag" style="margin-top:${p.image_url?'16px':'0'};">${p.company_name}</span>` : ''}
+    <h3 style="margin:10px 0 6px;">${p.title}</h3>
+    <div style="color:var(--text-faint);font-size:12px;margin-bottom:16px;">${p.author_name || ''} · ${fmtDate(p.created_at)}</div>
+    <p style="font-size:14.5px;line-height:1.9;color:var(--text);white-space:pre-line;">${p.body}</p>
+    <div class="modal-actions">
+      ${isAdmin ? `<button class="btn btn-danger" id="pv-delete">${ICONS.trash} حذف</button><button class="btn" id="pv-edit">${ICONS.edit} تعديل</button>` : ''}
+      <button class="btn btn-primary" id="pv-close">إغلاق</button>
+    </div>`, 'modal-wide');
+  document.getElementById('pv-close').onclick = closeModal;
+  const editBtn = document.getElementById('pv-edit');
+  if(editBtn) editBtn.onclick = ()=>{ closeModal(); openPostModal(postId); };
+  const delBtn = document.getElementById('pv-delete');
+  if(delBtn) delBtn.onclick = ()=>{
+    confirmModal('حذف هذا الحل؟','سيتم حذف المقالة والصورة المرفقة نهائياً.', async ()=>{
+      try{ await apiCall('delete_post','POST',{id:postId}); closeModal(); renderMain(); }
+      catch(e){ alert(e.message); }
+    });
+  };
+}
+
+function openPostModal(postId){
+  const editing = postId ? state.data.posts.find(x=>x.id===postId) : null;
+  const companies = flattenCompanies();
+  let pendingImageData = null;
+  openModal(`
+    <h3>${editing?'تعديل الحل':'إضافة حل جديد'}</h3>
+    <div class="field"><label>العنوان</label><input id="pm-title" value="${editing?editing.title:''}" placeholder="مثال: حل مشكلة عدم شحن آيفون"></div>
+    <div class="field"><label>الشركة المرتبطة (اختياري)</label>
+      <div class="select-wrap">
+        <select id="pm-company">
+          <option value="">بدون تصنيف</option>
+          ${companies.map(c=>`<option value="${c.id}" ${editing&&editing.company_id===c.id?'selected':''}>${c.label}</option>`).join('')}
+        </select>
+        <span class="select-arrow">${ICONS.chevron}</span>
+      </div>
+    </div>
+    <div class="field"><label>المحتوى</label><textarea id="pm-body" placeholder="اشرح الحل بالتفصيل..." style="min-height:130px;">${editing?editing.body:''}</textarea></div>
+    <div class="field">
+      <label>صورة (اختياري)</label>
+      <div class="image-upload-row">
+        <label class="btn btn-sm image-upload-btn">${ICONS.upload} رفع صورة<input type="file" id="pm-image-file" accept="image/*" style="display:none;"></label>
+        <span id="pm-image-name" style="font-size:12.5px;color:var(--text-faint);">${editing&&editing.image_url?'يوجد صورة حالياً':'لم يتم اختيار صورة'}</span>
+      </div>
+      <input id="pm-image-url" placeholder="أو الصق رابط صورة مباشر (https://...)" value="${editing&&editing.image_url&&!editing.image_url.includes('/uploads/')?editing.image_url:''}" style="margin-top:8px;">
+    </div>
+    <div class="login-error" id="pm-error"></div>
+    <div class="modal-actions">
+      <button class="btn" id="pm-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="pm-save">حفظ</button>
+    </div>`, 'modal-wide');
+
+  document.getElementById('pm-image-file').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    document.getElementById('pm-image-name').textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = ()=>{ pendingImageData = reader.result; };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('pm-cancel').onclick = closeModal;
+  document.getElementById('pm-save').onclick = async ()=>{
+    const title = document.getElementById('pm-title').value.trim();
+    const body = document.getElementById('pm-body').value.trim();
+    const company_id = document.getElementById('pm-company').value;
+    const image_url = document.getElementById('pm-image-url').value.trim();
+    if(!title || !body){ document.getElementById('pm-error').textContent='العنوان والمحتوى مطلوبان'; return; }
+    const payload = { title, body, company_id };
+    if(pendingImageData) payload.image_data = pendingImageData;
+    else if(image_url) payload.image_url = image_url;
+    try{
+      if(editing){ payload.id = editing.id; await apiCall('update_post','POST',payload); }
+      else{ await apiCall('add_post','POST',payload); }
+      closeModal(); renderMain();
+    }catch(e){ document.getElementById('pm-error').textContent = e.message; }
   };
 }
 

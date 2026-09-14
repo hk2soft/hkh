@@ -411,6 +411,40 @@
   .post-modal-image{width:100%;height:200px;border-radius:16px;background-size:cover;background-position:center;background-color:var(--surface-alt);}
   .image-upload-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
   .image-upload-btn{cursor:pointer;}
+
+  /* company filter chips */
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .chip{
+    padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;color:var(--text-dim);
+    background:var(--surface);box-shadow:3px 3px 7px var(--shadow-d-soft), -3px -3px 7px var(--shadow-l-soft);
+    transition:box-shadow .15s ease,color .15s ease;
+  }
+  .chip.active{color:#fff;background:linear-gradient(135deg, var(--accent), var(--accent-2));box-shadow:0 4px 12px -3px rgba(var(--accent-rgb),.5);}
+
+  /* company autocomplete */
+  .autocomplete-wrap{position:relative;}
+  .autocomplete-list{
+    position:absolute;top:calc(100% + 6px);right:0;left:0;z-index:10;
+    border-radius:14px;padding:6px;max-height:220px;overflow-y:auto;
+  }
+  .autocomplete-item{
+    display:block;width:100%;text-align:right;padding:10px 12px;border-radius:10px;font-size:13.5px;color:var(--text);
+    transition:background .12s ease;
+  }
+  .autocomplete-item:hover{background:rgba(var(--accent-rgb),.12);color:var(--accent);}
+
+  /* image lightbox */
+  .lightbox-backdrop{
+    position:fixed;inset:0;background:rgba(5,7,12,.85);z-index:80;
+    display:flex;align-items:center;justify-content:center;padding:26px;
+    animation:fadeIn .15s ease both;
+  }
+  .lightbox-img{max-width:92vw;max-height:88vh;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .lightbox-close{
+    position:absolute;top:20px;left:20px;width:40px;height:40px;border-radius:50%;
+    background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;
+  }
+  .lightbox-close svg{width:18px;height:18px;stroke:currentColor;}
   .detail-price-box{
     display:flex;align-items:baseline;gap:8px;justify-content:center;
     padding:20px;border-radius:16px;margin-bottom:6px;
@@ -760,8 +794,8 @@ async function apiCall(action, method = 'GET', body = null, auth = true, params 
 let state = {
   token: localStorage.getItem('workshop_token') || null,
   currentUser: JSON.parse(localStorage.getItem('workshop_user') || 'null'),
-  data: { categories: {}, users: [], reports: [], announcements: [], posts: [] },
-  postsFilter: '',
+  data: { categories: {}, users: [], reports: [], announcements: [], posts: [], postCompanies: [] },
+  postsFilterName: '', solutionsSearchQuery: '',
   selCategory: null, selCompany: null, searchQuery: '',
   view: 'browse', adminTab: 'catalog', adminCategory: null
 };
@@ -1429,39 +1463,67 @@ function openAnnouncementModal(){
 /* =========================================================
    SOLUTIONS (brand-tagged articles with images)
 ========================================================= */
-function flattenCompanies(){
-  const out = [];
-  Object.entries(state.data.categories).forEach(([catId, cat])=>{
-    cat.companies.forEach(comp=> out.push({ id: comp.id, label: `${cat.name} — ${comp.name}` }));
-  });
-  return out;
+let solutionsSearchDebounce = null;
+
+function solutionsSearchBarHTML(){
+  const q = state.solutionsSearchQuery || '';
+  return `
+    <div class="search-bar neu-inset">
+      ${ICONS.search}
+      <input id="sol-search-input" type="text" placeholder="ابحث بالعنوان، المحتوى، أو اسم الشركة..." value="${q.replace(/"/g,'&quot;')}" oninput="onSolutionsSearchInput(this.value)">
+      ${q ? `<button class="btn-clear-search" onclick="clearSolutionsSearch()">${ICONS.x}</button>` : ''}
+    </div>`;
+}
+function onSolutionsSearchInput(value){
+  state.solutionsSearchQuery = value;
+  clearTimeout(solutionsSearchDebounce);
+  solutionsSearchDebounce = setTimeout(()=>{ renderMain(); }, 350);
+}
+function clearSolutionsSearch(){
+  state.solutionsSearchQuery = '';
+  renderMain();
 }
 
 async function renderSolutions(){
   const main = document.getElementById('main');
-  main.innerHTML = `<div class="empty">جاري التحميل...</div>`;
+  const hadContent = state._solutionsLoadedOnce;
+  if(!hadContent) main.innerHTML = `<div class="empty">جاري التحميل...</div>`;
+
   try{
-    const res = await apiCall('list_posts', 'GET', null, true, state.postsFilter ? {company_id: state.postsFilter} : null);
+    const params = {};
+    if(state.postsFilterName) params.company = state.postsFilterName;
+    if((state.solutionsSearchQuery||'').trim()) params.q = state.solutionsSearchQuery.trim();
+    const res = await apiCall('list_posts', 'GET', null, true, Object.keys(params).length ? params : null);
     state.data.posts = res.posts;
+    if(!state._postCompaniesLoaded){
+      const cres = await apiCall('list_post_companies');
+      state.data.postCompanies = cres.companies;
+      state._postCompaniesLoaded = true;
+    }
+    state._solutionsLoadedOnce = true;
   }catch(e){ main.innerHTML = `<div class="empty">${e.message}</div>`; return; }
 
   const isAdmin = state.currentUser.role==='admin';
-  const companies = flattenCompanies();
+  const companyNames = state.data.postCompanies || [];
 
   let html = `<h2 class="section-title">الحلول</h2><p class="section-sub">مقالات وحلول تقنية مصنّفة حسب الشركة</p>`;
-  html += `<div class="solutions-toolbar">
-    <div class="select-wrap" style="flex:1;max-width:280px;">
-      <select id="sol-filter">
-        <option value="">كل الشركات</option>
-        ${companies.map(c=>`<option value="${c.id}" ${state.postsFilter===c.id?'selected':''}>${c.label}</option>`).join('')}
-      </select>
-      <span class="select-arrow">${ICONS.chevron}</span>
-    </div>
-    ${isAdmin ? `<button class="btn btn-primary btn-sm" id="btn-add-post">${ICONS.plus} إضافة حل جديد</button>` : ''}
-  </div>`;
+  html += solutionsSearchBarHTML();
+
+  if(companyNames.length){
+    html += `<div class="chip-row">
+      <button class="chip ${!state.postsFilterName?'active':''}" data-company-chip="">الكل</button>
+      ${companyNames.map(name=>`<button class="chip ${state.postsFilterName===name?'active':''}" data-company-chip="${name}">${name}</button>`).join('')}
+    </div>`;
+  }
+
+  if(isAdmin){
+    html += `<div class="solutions-toolbar" style="justify-content:flex-end;">
+      <button class="btn btn-primary btn-sm" id="btn-add-post">${ICONS.plus} إضافة حل جديد</button>
+    </div>`;
+  }
 
   if(state.data.posts.length===0){
-    html += `<div class="empty">لا توجد حلول مضافة بعد</div>`;
+    html += `<div class="empty">لا توجد حلول مطابقة</div>`;
   }else{
     html += `<div class="post-grid">` + state.data.posts.map(p=>`
       <button class="post-card neu-raised-sm" data-open-post="${p.id}">
@@ -1470,18 +1532,29 @@ async function renderSolutions(){
           ${p.company_name ? `<span class="post-tag">${p.company_name}</span>` : ''}
           <div class="post-card-title">${p.title}</div>
           <div class="post-card-snippet">${(p.body||'').slice(0,90)}${p.body.length>90?'…':''}</div>
-          <div class="post-card-date">${fmtDate(p.created_at)}</div>
         </div>
       </button>`).join('') + `</div>`;
   }
 
   main.innerHTML = html;
+  const searchInput = document.getElementById('sol-search-input');
+  if(searchInput){ searchInput.focus(); const pos = searchInput.value.length; searchInput.setSelectionRange(pos,pos); }
 
-  document.getElementById('sol-filter').onchange = (e)=>{ state.postsFilter = e.target.value; renderMain(); };
+  document.querySelectorAll('[data-company-chip]').forEach(el=>{
+    el.onclick = ()=>{ state.postsFilterName = el.dataset.companyChip; renderMain(); };
+  });
   const addBtn = document.getElementById('btn-add-post'); if(addBtn) addBtn.onclick = ()=> openPostModal();
   document.querySelectorAll('[data-open-post]').forEach(el=>{
     el.onclick = ()=> openPostViewModal(el.dataset.openPost);
   });
+}
+
+function openImageLightbox(url){
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-backdrop';
+  overlay.innerHTML = `<img src="${url}" class="lightbox-img"><button class="lightbox-close">${ICONS.x}</button>`;
+  overlay.addEventListener('click', ()=> overlay.remove());
+  document.body.appendChild(overlay);
 }
 
 function openPostViewModal(postId){
@@ -1489,16 +1562,17 @@ function openPostViewModal(postId){
   if(!p) return;
   const isAdmin = state.currentUser.role==='admin';
   openModal(`
-    ${p.image_url ? `<div class="post-modal-image" style="background-image:url('${p.image_url}')"></div>` : ''}
+    ${p.image_url ? `<div class="post-modal-image" style="background-image:url('${p.image_url}')" id="pv-image" title="اضغط لتكبير الصورة"></div>` : ''}
     ${p.company_name ? `<span class="post-tag" style="margin-top:${p.image_url?'16px':'0'};">${p.company_name}</span>` : ''}
-    <h3 style="margin:10px 0 6px;">${p.title}</h3>
-    <div style="color:var(--text-faint);font-size:12px;margin-bottom:16px;">${p.author_name || ''} · ${fmtDate(p.created_at)}</div>
+    <h3 style="margin:10px 0 16px;">${p.title}</h3>
     <p style="font-size:14.5px;line-height:1.9;color:var(--text);white-space:pre-line;">${p.body}</p>
     <div class="modal-actions">
       ${isAdmin ? `<button class="btn btn-danger" id="pv-delete">${ICONS.trash} حذف</button><button class="btn" id="pv-edit">${ICONS.edit} تعديل</button>` : ''}
       <button class="btn btn-primary" id="pv-close">إغلاق</button>
     </div>`, 'modal-wide');
   document.getElementById('pv-close').onclick = closeModal;
+  const imgEl = document.getElementById('pv-image');
+  if(imgEl) imgEl.onclick = ()=> openImageLightbox(p.image_url);
   const editBtn = document.getElementById('pv-edit');
   if(editBtn) editBtn.onclick = ()=>{ closeModal(); openPostModal(postId); };
   const delBtn = document.getElementById('pv-delete');
@@ -1512,19 +1586,15 @@ function openPostViewModal(postId){
 
 function openPostModal(postId){
   const editing = postId ? state.data.posts.find(x=>x.id===postId) : null;
-  const companies = flattenCompanies();
+  const suggestions = state.data.postCompanies || [];
   let pendingImageData = null;
   openModal(`
     <h3>${editing?'تعديل الحل':'إضافة حل جديد'}</h3>
     <div class="field"><label>العنوان</label><input id="pm-title" value="${editing?editing.title:''}" placeholder="مثال: حل مشكلة عدم شحن آيفون"></div>
-    <div class="field"><label>الشركة المرتبطة (اختياري)</label>
-      <div class="select-wrap">
-        <select id="pm-company">
-          <option value="">بدون تصنيف</option>
-          ${companies.map(c=>`<option value="${c.id}" ${editing&&editing.company_id===c.id?'selected':''}>${c.label}</option>`).join('')}
-        </select>
-        <span class="select-arrow">${ICONS.chevron}</span>
-      </div>
+    <div class="field autocomplete-wrap">
+      <label>اسم الشركة (اختياري)</label>
+      <input id="pm-company" autocomplete="off" value="${editing&&editing.company_name?editing.company_name:''}" placeholder="اكتب اسم أي شركة... مثال: Apple">
+      <div class="autocomplete-list neu-raised-sm hidden" id="pm-company-suggestions"></div>
     </div>
     <div class="field"><label>المحتوى</label><textarea id="pm-body" placeholder="اشرح الحل بالتفصيل..." style="min-height:130px;">${editing?editing.body:''}</textarea></div>
     <div class="field">
@@ -1541,6 +1611,22 @@ function openPostModal(postId){
       <button class="btn btn-primary" id="pm-save">حفظ</button>
     </div>`, 'modal-wide');
 
+  const companyInput = document.getElementById('pm-company');
+  const suggBox = document.getElementById('pm-company-suggestions');
+  function renderSuggestions(){
+    const val = companyInput.value.trim().toLowerCase();
+    const matches = suggestions.filter(s=> s.toLowerCase().includes(val)).slice(0,6);
+    if(!matches.length || (matches.length===1 && matches[0].toLowerCase()===val)){ suggBox.classList.add('hidden'); return; }
+    suggBox.innerHTML = matches.map(s=>`<button type="button" class="autocomplete-item" data-sugg="${s}">${s}</button>`).join('');
+    suggBox.classList.remove('hidden');
+    suggBox.querySelectorAll('[data-sugg]').forEach(el=>{
+      el.onclick = ()=>{ companyInput.value = el.dataset.sugg; suggBox.classList.add('hidden'); };
+    });
+  }
+  companyInput.addEventListener('focus', renderSuggestions);
+  companyInput.addEventListener('input', renderSuggestions);
+  companyInput.addEventListener('blur', ()=> setTimeout(()=> suggBox.classList.add('hidden'), 150));
+
   document.getElementById('pm-image-file').addEventListener('change', function(e){
     const file = e.target.files[0];
     if(!file) return;
@@ -1554,15 +1640,16 @@ function openPostModal(postId){
   document.getElementById('pm-save').onclick = async ()=>{
     const title = document.getElementById('pm-title').value.trim();
     const body = document.getElementById('pm-body').value.trim();
-    const company_id = document.getElementById('pm-company').value;
+    const company_name = companyInput.value.trim();
     const image_url = document.getElementById('pm-image-url').value.trim();
     if(!title || !body){ document.getElementById('pm-error').textContent='العنوان والمحتوى مطلوبان'; return; }
-    const payload = { title, body, company_id };
+    const payload = { title, body, company_name };
     if(pendingImageData) payload.image_data = pendingImageData;
     else if(image_url) payload.image_url = image_url;
     try{
       if(editing){ payload.id = editing.id; await apiCall('update_post','POST',payload); }
       else{ await apiCall('add_post','POST',payload); }
+      state._postCompaniesLoaded = false;
       closeModal(); renderMain();
     }catch(e){ document.getElementById('pm-error').textContent = e.message; }
   };
